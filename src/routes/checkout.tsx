@@ -92,8 +92,45 @@ function CheckoutPage() {
           <button type="submit" className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-whatsapp px-5 py-3.5 text-sm font-bold text-whatsapp-foreground hover:opacity-90">
             <MessageCircle className="h-4 w-4" /> Confirm Order via WhatsApp
           </button>
+
+          <div className="relative my-2 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-semibold uppercase text-muted-foreground">or pay now</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <div className="rounded-xl border border-border bg-gradient-to-br from-[#0a8f3c]/5 to-[#0a8f3c]/10 p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0a8f3c] text-white">
+                <Smartphone className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold">Pay with M-Pesa</p>
+                <p className="text-xs text-muted-foreground">You'll get an STK push on {form.phone || "your phone"} for {formatKES(total)}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={!form.name || !form.phone || !form.address || mpesaStatus !== "idle"}
+              onClick={() => {
+                setMpesaStatus("sending");
+                setTimeout(() => setMpesaStatus("sent"), 2500);
+              }}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#0a8f3c] px-5 py-3.5 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {mpesaStatus === "idle" && (<><Smartphone className="h-4 w-4" /> M-Pesa Pay via STK</>)}
+              {mpesaStatus === "sending" && (<><Loader2 className="h-4 w-4 animate-spin" /> Sending STK push…</>)}
+              {mpesaStatus === "sent" && (<><CheckCircle2 className="h-4 w-4" /> Check your phone to complete</>)}
+            </button>
+            {mpesaStatus === "sent" && (
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                Enter your M-Pesa PIN on your phone to authorize the payment.
+              </p>
+            )}
+          </div>
+
           <p className="text-center text-xs text-muted-foreground">
-            Online payments coming soon. For now we confirm and arrange delivery via WhatsApp.
+            M-Pesa STK Push is in demo mode — live payments coming soon. WhatsApp confirms delivery details.
           </p>
         </form>
       </div>
