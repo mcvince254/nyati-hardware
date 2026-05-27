@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { MessageCircle, CheckCircle2 } from "lucide-react";
+import { MessageCircle, CheckCircle2, Smartphone, Loader2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { BUSINESS_NAME, formatKES, whatsappLink } from "@/lib/whatsapp";
 
