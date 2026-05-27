@@ -13,6 +13,7 @@ function CheckoutPage() {
   const { items, total, clear } = useCart();
   const [form, setForm] = useState({ name: "", phone: "", address: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [mpesaStatus, setMpesaStatus] = useState<"idle" | "sending" | "sent">("idle");
 
   const handle = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
