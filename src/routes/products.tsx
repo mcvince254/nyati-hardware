@@ -55,7 +55,7 @@ function ProductsPage() {
             onChange={(e) => {
               const v = e.target.value;
               setQuery(v);
-              navigate({ search: (prev) => ({ ...prev, q: v }), replace: true });
+              navigate({ search: (prev: z.infer<typeof schema>) => ({ ...prev, q: v }), replace: true });
             }}
             placeholder="Search products..."
             className="h-11 w-full rounded-full border border-input bg-card pl-10 pr-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -71,7 +71,7 @@ function ProductsPage() {
               <Link
                 key={c}
                 to="/products"
-                search={(prev) => ({ ...prev, category: c })}
+                search={(prev: z.infer<typeof schema>) => ({ ...prev, category: c })}
                 className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
                   active
                     ? "bg-gradient-primary text-primary-foreground shadow-card"
