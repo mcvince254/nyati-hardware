@@ -13,7 +13,8 @@ function CheckoutPage() {
   const { items, total, clear } = useCart();
   const [form, setForm] = useState({ name: "", phone: "", address: "", notes: "" });
   const [submitted, setSubmitted] = useState(false);
-  const [mpesaStatus, setMpesaStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [mpesaStatus, setMpesaStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [mpesaMessage, setMpesaMessage] = useState<string>("");
 
   const handle = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -111,26 +112,53 @@ function CheckoutPage() {
             </div>
             <button
               type="button"
-              disabled={!form.name || !form.phone || !form.address || mpesaStatus !== "idle"}
-              onClick={() => {
+              disabled={!form.name || !form.phone || !form.address || mpesaStatus === "sending" || mpesaStatus === "sent"}
+              onClick={async () => {
                 setMpesaStatus("sending");
-                setTimeout(() => setMpesaStatus("sent"), 2500);
+                setMpesaMessage("");
+                try {
+                  const res = await fetch("/api/mpesa-stk", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      phone: form.phone,
+                      amount: total,
+                      reference: "NYATI",
+                      description: "Hardware order",
+                    }),
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) {
+                    setMpesaStatus("error");
+                    setMpesaMessage(data?.error || "Failed to send STK push. Please try again.");
+                    return;
+                  }
+                  setMpesaStatus("sent");
+                  setMpesaMessage(data.customerMessage || "Check your phone to complete payment.");
+                } catch (err) {
+                  setMpesaStatus("error");
+                  setMpesaMessage((err as Error).message);
+                }
               }}
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#0a8f3c] px-5 py-3.5 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {mpesaStatus === "idle" && (<><Smartphone className="h-4 w-4" /> M-Pesa Pay via STK</>)}
               {mpesaStatus === "sending" && (<><Loader2 className="h-4 w-4 animate-spin" /> Sending STK push…</>)}
               {mpesaStatus === "sent" && (<><CheckCircle2 className="h-4 w-4" /> Check your phone to complete</>)}
+              {mpesaStatus === "error" && (<><Smartphone className="h-4 w-4" /> Try again</>)}
             </button>
             {mpesaStatus === "sent" && (
               <p className="mt-2 text-center text-xs text-muted-foreground">
-                Enter your M-Pesa PIN on your phone to authorize the payment.
+                {mpesaMessage || "Enter your M-Pesa PIN on your phone to authorize the payment."}
               </p>
+            )}
+            {mpesaStatus === "error" && (
+              <p className="mt-2 text-center text-xs text-destructive">{mpesaMessage}</p>
             )}
           </div>
 
           <p className="text-center text-xs text-muted-foreground">
-            M-Pesa STK Push is in demo mode — live payments coming soon. WhatsApp confirms delivery details.
+            Powered by Safaricom Daraja STK Push. You'll authorize the payment on your phone.
           </p>
         </form>
       </div>

@@ -33,7 +33,7 @@ export function Footer() {
             <li className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-0.5" /> {LOCATION}</li>
             <li className="flex items-start gap-2"><Phone className="h-4 w-4 mt-0.5" /> {PHONE_DISPLAY}</li>
             <li className="flex items-start gap-2"><Clock className="h-4 w-4 mt-0.5" /> {HOURS}</li>
-            <li className="flex items-start gap-2"><Mail className="h-4 w-4 mt-0.5" /> info@nyatihardware.co.ke</li>
+            <li className="flex items-start gap-2"><Mail className="h-4 w-4 mt-0.5" /><span>info@nyatihardware.co.ke</span></li>
           </ul>
         </div>
 
